@@ -6,26 +6,31 @@
     max-width="344"
   >
     <v-card-text>
-      <div>Question</div>
+      <p> {{results.active.category}} </p>
       <p class="display-1 text--primary">
-        {{ results[0].question }}
+        {{ results.active.question }}
       </p>
-      <p>adjective</p>
       <div class="text--primary">
-        well meaning and kindly.<br>
-        "a benevolent smile"
+        <v-list rounded>
+          <v-list-item-group v-model="this.results.active.options" color="primary">
+            <v-list-item
+              v-for="(item, i) in this.results.active.options"
+              :key="i" @click="answerClicked(item)"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-text="item"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list>
       </div>
     </v-card-text>
     <v-card-actions>
-      <v-btn
-        text
-        color="deep-purple accent-4"
-      >
-        Learn More
-      </v-btn>
+      <v-btn small @click="previousQuestion()">Previous</v-btn>
+      <v-btn small @click="nextQuestion()">Next</v-btn>
     </v-card-actions>
   </v-card>
-    <v-btn small @click="fetchQuestion()">Normal</v-btn>
+    
   </div>
 </template>
 
@@ -40,15 +45,48 @@ export default {
   },
   data: function() {
     return {
-      results: "Your question is:"
+      results: {
+        questions: {},
+        index: 0,
+        active: ""
+      }
     }
   },
   methods: {
-    fetchQuestion() {
+    fetchQuestion: function() {
       fetch('https://opentdb.com/api.php?amount=10')
       .then(res => res.json())
-      .then(json => this.results = json.results);
+      .then(json =>  {
+        this.results.questions = json.results;
+        this.results.active = this.getAllOptions(json.results[0]);
+        });
+    },
+    nextQuestion() {
+      this.results.active = this.getAllOptions(this.results.questions[this.results.index++]);
+    },
+    previousQuestion() {
+      this.results.active = this.getAllOptions(this.results.questions[this.results.index--]);
+    },
+    answerClicked(index) {
+      console.log(index + "clicked")
+    },
+    getAllOptions(item) {
+      let ret = item;
+      let options = [...item.incorrect_answers , item.correct_answer];
+      ret.options = this.shuffle(options);
+      console.log(ret);
+      return ret;
+    },
+    shuffle(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
     }
-  } 
+    return a;
+    }
+  },
+  beforeMount: function() {
+    this.fetchQuestion();
+  }
 }
 </script>
