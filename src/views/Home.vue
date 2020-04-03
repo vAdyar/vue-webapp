@@ -1,36 +1,13 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <v-card
-    class="mx-auto"
-    max-width="344"
-  >
-    <v-card-text>
-      <p> {{results.active.category}} </p>
-      <p class="display-1 text--primary">
-        {{ results.active.question }}
-      </p>
-      <div class="text--primary">
-        <v-list rounded>
-          <v-list-item-group v-model="this.results.active.options" color="primary">
-            <v-list-item
-              v-for="(item, i) in this.results.active.options"
-              :key="i" @click="answerClicked(item)"
-            >
-              <v-list-item-content>
-                <v-list-item-title v-text="item"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list-item-group>
-        </v-list>
-      </div>
-    </v-card-text>
-    <v-card-actions>
+  <div class="home" @next="doSomething">
+    
+    {{ this.results.correct }} / {{ this.results.total }}
+    <Card :cue="results.active" :index="results.index"/>
+
+    <div>
       <v-btn small @click="previousQuestion()">Previous</v-btn>
       <v-btn small @click="nextQuestion()">Next</v-btn>
-    </v-card-actions>
-  </v-card>
-    
+    </div>
   </div>
 </template>
 
@@ -41,18 +18,24 @@ import Card from '@/components/Card.vue'
 export default {
   name: 'Home',
   components: {
-    Card
+    Card,
   },
   data: function() {
     return {
       results: {
         questions: {},
         index: 0,
-        active: ""
+        active: "",
+        correct: 0,
+        total: 10,
+        class_active: ""
       }
     }
   },
   methods: {
+    doSomething(event, { isCorrect }) {
+      console.log("DO something"+event)
+    },
     fetchQuestion: function() {
       fetch('https://opentdb.com/api.php?amount=10')
       .then(res => res.json())
@@ -63,12 +46,10 @@ export default {
     },
     nextQuestion() {
       this.results.active = this.getAllOptions(this.results.questions[this.results.index++]);
+      console.log("Next clicked!!!")
     },
     previousQuestion() {
       this.results.active = this.getAllOptions(this.results.questions[this.results.index--]);
-    },
-    answerClicked(index) {
-      console.log(index + "clicked")
     },
     getAllOptions(item) {
       let ret = item;
