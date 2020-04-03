@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="mx-auto"
-    max-width="344"
+    max-width="444"
   >
     <v-card-text>
       <p> {{ cue.category }} </p>
@@ -13,7 +13,7 @@
           <v-list-item-group v-model="this.cue.options" color="primary">
             <v-list-item
               v-for="(item, i) in this.cue.options"
-              :key="i" @click="answerClicked(item)"
+              :key="i" @click.prevent="answerClicked(item)"
             >
               <v-list-item-content>
                 <v-list-item-title v-text="item"></v-list-item-title>
@@ -34,13 +34,13 @@ export default {
     data: function() {
         return {
             card: {
+                cue: {},
                 isCorrect: false
             }
         }
     },
     props: {
-        cue: Object,
-        index: Number
+        cue: Object
     },
     methods: {
         answerClicked(item) {
@@ -52,7 +52,6 @@ export default {
                 console.log("incorrect")
             }     
             this.$emit('next', this.card.isCorrect);
-            return true;
         }
     }
 

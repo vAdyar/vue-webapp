@@ -1,12 +1,26 @@
 <template>
-  <div class="home" @next="doSomething">
-    
+  <div class="home">
+    {{ this.results.index }}
+    <br/>
     {{ this.results.correct }} / {{ this.results.total }}
-    <Card :cue="results.active" :index="results.index"/>
+    <Card v-if="results.index < 5" :cue=results.active v-on:next="doSomething($event)"/>
+    
+    <v-card
+    class="mx-auto"
+    max-width="344"
+    v-else
+  >
+    <v-card-text>
+      <div>Thank you</div>
+      <p class="display-1 text--primary">
+        That's all folks!
+      </p>
+    </v-card-text>
+  </v-card>
 
     <div>
-      <v-btn small @click="previousQuestion()">Previous</v-btn>
-      <v-btn small @click="nextQuestion()">Next</v-btn>
+      <v-btn small @click.prevent="previousQuestion()">Previous</v-btn>
+      <v-btn small @click.prevent="nextQuestion()">Next</v-btn>
     </div>
   </div>
 </template>
@@ -25,7 +39,7 @@ export default {
       results: {
         questions: {},
         index: 0,
-        active: "",
+        active: {},
         correct: 0,
         total: 10,
         class_active: ""
@@ -33,23 +47,28 @@ export default {
     }
   },
   methods: {
-    doSomething(event, { isCorrect }) {
-      console.log("DO something"+event)
+    doSomething: function(event) {
+      console.log("dosomething")
+      if( event ) {
+        this.results.correct++;
+      }
+      this.nextQuestion();
     },
     fetchQuestion: function() {
       fetch('https://opentdb.com/api.php?amount=10')
       .then(res => res.json())
       .then(json =>  {
         this.results.questions = json.results;
+        console.log(json.results)
         this.results.active = this.getAllOptions(json.results[0]);
         });
     },
     nextQuestion() {
-      this.results.active = this.getAllOptions(this.results.questions[this.results.index++]);
-      console.log("Next clicked!!!")
+      this.results.active = this.getAllOptions(this.results.questions[++this.results.index]);
+      console.log(this.results.active.question)
     },
     previousQuestion() {
-      this.results.active = this.getAllOptions(this.results.questions[this.results.index--]);
+      this.results.active = this.getAllOptions(this.results.questions[--this.results.index]);
     },
     getAllOptions(item) {
       let ret = item;
