@@ -1,12 +1,10 @@
 <template>
   <div class="home">
     <Header/>
-    {{ this.index }}
-    <br/>
     {{ this.results.correct }} / {{ this.results.total }}
     <br/>
     <v-btn small @click.prevent=resetQuestion>Reset</v-btn>
-    <Card v-if="this.index < 10 && results.active" :cue=results.active v-on:next="doSomething($event)"/>
+    <Card v-if="this.index < 10 && results.active" :index=this.index v-on:next="doSomething($event)"/>
     
     <v-card
     class="mx-auto"
@@ -66,15 +64,15 @@ export default {
       this.nextQuestion();
     },
     fetchQuestion: function() {
-      fetch('https://opentdb.com/api.php?amount=10')
+      this.$http.get('https://opentdb.com/api.php?amount=10')
       .then(res => res.json())
       .then(json =>  {
         this.results.active = this.getAllOptions(json.results[0]);
         this.storeQuestions(json.results)
-       console.log(this.getQ);
         });
     },
     resetQuestion() {
+      this.results.correct = 0;
       this.changeIndex(-this.index)
       this.results.active = this.getAllOptions(this.questions[this.index]);
     },
@@ -104,10 +102,7 @@ export default {
     ...mapState([
       'index',
       'questions'
-    ]),
-    getQ() {
-       return this.$store.getters.getQuestionById(this.index)
-    }
+    ])
   },
   beforeMount: function() {
     this.fetchQuestion();

@@ -3,16 +3,16 @@
     class="mx-auto"
     max-width="444"
   >
-    <v-card-text>
-      <p> {{ cue.category }} </p>
+    <v-card-text v-if="this.$store.getters.getQuestionById(this.index)">
+      <p> {{ this.$store.getters.getQuestionById(this.index).category }} </p>
       <p class="display-1 text--primary">
-        {{ cue.question }}
+        {{ this.$store.getters.getQuestionById(this.index).question }}
       </p>
       <div class="text--primary">
         <v-list rounded>
-          <v-list-item-group v-model="this.cue.options" color="primary">
+          <v-list-item-group v-model="this.$store.getters.getQuestionById(this.index).options" color="primary">
             <v-list-item
-              v-for="(item, i) in this.cue.options"
+              v-for="(item, i) in this.$store.getters.getQuestionById(this.index).options"
               :key="i" @click.prevent="answerClicked(item)"
             >
               <v-list-item-content>
@@ -27,6 +27,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
     component: {
         name: "Card"
@@ -34,17 +36,21 @@ export default {
     data: function() {
         return {
             card: {
-                cue: {},
                 isCorrect: false
             }
         }
     },  
     props: {
-        cue: Object
+        index: Number
     },
     methods: {
+        ...mapGetters([
+          'getQuestionById'
+        ]),
         answerClicked(item) {
-            if(this.cue.correct_answer === item) {
+          console.log("item: "+item)
+          let answer = this.$store.getters.getQuestionById(this.index).correct_answer;
+            if(answer === item) {
                 this.card.isCorrect = true;       
                 console.log("correct")
             } else {
@@ -54,7 +60,6 @@ export default {
             this.$emit('next', this.card.isCorrect);
         }
     }
-
 }
 </script>
 

@@ -2,7 +2,8 @@
   <v-app id="center">
     <v-content class="v-content">
       <router-link to="/">HOME</router-link> | 
-      <router-link to="/about">ABOUT</router-link>
+      <router-link to="/userForm">USER FORM</router-link> | 
+      <router-link to="/results">RESULTS</router-link>
       
       <router-view/>
     </v-content>
