@@ -38,7 +38,7 @@ export default {
                 isCorrect: false
             }
         }
-    },
+    },  
     props: {
         cue: Object
     },

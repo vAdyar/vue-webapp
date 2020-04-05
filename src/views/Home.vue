@@ -1,14 +1,12 @@
 <template>
   <div class="home">
     <Header/>
-    {{ $store.state.count }}
-    <br/>
-    {{ this.results.index }}
+    {{ this.index }}
     <br/>
     {{ this.results.correct }} / {{ this.results.total }}
     <br/>
     <v-btn small @click.prevent=resetQuestion>Reset</v-btn>
-    <Card v-if="results.index < 10" :cue=results.active v-on:next="doSomething($event)"/>
+    <Card v-if="this.index < 10 && results.active" :cue=results.active v-on:next="doSomething($event)"/>
     
     <v-card
     class="mx-auto"
@@ -24,8 +22,8 @@
   </v-card>
 
     <div>
-      <v-btn small @click.prevent="previousQuestion()" :disabled="results.index == 0">Previous</v-btn>
-      <v-btn small @click.prevent="nextQuestion()" :disabled="results.index == 10">Next</v-btn>
+      <v-btn small @click.prevent="previousQuestion()" :disabled="this.index == 0">Previous</v-btn>
+      <v-btn small @click.prevent="nextQuestion()" :disabled="this.index == 10">Next</v-btn>
     </div>
   </div>
 </template>
@@ -34,6 +32,9 @@
 // @ is an alias to /src
 import Card from '@/components/Card.vue'
 import Header from '@/components/Header.vue'
+import { mapState } from 'vuex'
+import { mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Home',
@@ -44,8 +45,6 @@ export default {
   data: function() {
     return {
       results: {
-        questions: {},
-        index: 0,
         active: {},
         correct: 0,
         total: 10
@@ -53,6 +52,13 @@ export default {
     }
   },
   methods: {
+    ...mapMutations([
+      'changeIndex',
+      'storeQuestions'
+    ]),
+    ...mapGetters([
+      'getQuestionById'
+    ]),
     doSomething: function(event) {
       if( event ) {
         this.results.correct++;
@@ -63,20 +69,22 @@ export default {
       fetch('https://opentdb.com/api.php?amount=10')
       .then(res => res.json())
       .then(json =>  {
-        this.results.questions = json.results;
-        console.log(json.results)
         this.results.active = this.getAllOptions(json.results[0]);
+        this.storeQuestions(json.results)
+       console.log(this.getQ);
         });
     },
     resetQuestion() {
-      this.results.index = 0
-      this.results.active = this.getAllOptions(this.results.questions[this.results.index]);
+      this.changeIndex(-this.index)
+      this.results.active = this.getAllOptions(this.questions[this.index]);
     },
     nextQuestion() {
-      this.results.active = this.getAllOptions(this.results.questions[++this.results.index]);
+      this.changeIndex(1)
+      this.results.active = this.getAllOptions(this.questions[this.index]);
     },
     previousQuestion() {
-      this.results.active = this.getAllOptions(this.results.questions[--this.results.index]);
+      this.changeIndex(-1)
+      this.results.active = this.getAllOptions(this.questions[this.index]);
     },
     getAllOptions(item) {
       let ret = item;
@@ -90,6 +98,15 @@ export default {
         [a[i], a[j]] = [a[j], a[i]];
     }
     return a;
+    }
+  },
+  computed: {
+    ...mapState([
+      'index',
+      'questions'
+    ]),
+    getQ() {
+       return this.$store.getters.getQuestionById(this.index)
     }
   },
   beforeMount: function() {

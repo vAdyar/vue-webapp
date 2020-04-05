@@ -5,9 +5,20 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    count: 50
+    index: 0,
+    questions: [],
+    dummy: ""
+  },
+  getters: {
+    getQuestionById: state => index =>  { return state.questions[index] }
   },
   mutations: {
+    changeIndex(state, val) {
+      state.index += val;
+    },
+    storeQuestions(state, items) {
+      state.questions = items;
+    }
   },
   actions: {
   },
