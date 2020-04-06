@@ -22,6 +22,8 @@
 </template>
 
 <script>
+import { db } from '../main'
+
   export default {
     data () {
       return {
@@ -43,9 +45,12 @@
     },
     methods: {
         fetchUsers: function() {
-            this.$http.get('https://vue-quiz-app-823e4.firebaseio.com/quiz/users/-M4AhxVz7rEYXMeCa0y9')
-            .then(function(data) {
-                console.log(data);
+            db.collection('users')
+            .get()
+            .then(querySnapshot => {
+              const documents = querySnapshot.docs.map(doc => doc.data())
+              this.users = documents
+              console.log(this.users);
             })
         }
     },

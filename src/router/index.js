@@ -7,6 +7,10 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
+    redirect: '/login'
+  },
+  {
+    path: '/home',
     name: 'Home',
     component: Home
   },
@@ -19,8 +23,13 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/UserForm.vue')
   },
   {
+    path: '/login',
+    name: 'Login',
+    component: () => import('@/views/Login.vue')
+  },
+  {
     path: '/results',
-    name: 'userResults',
+    name: 'UserResults',
     component: () => import('@/views/Results.vue')
   }
 ]

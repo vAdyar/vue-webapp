@@ -29,6 +29,21 @@
       required
     ></v-text-field>
 
+    <v-text-field
+        v-model="form.email"
+        :rules="emailRules"
+        label="E-mail"
+        required
+      ></v-text-field>
+
+      <v-text-field
+        v-model="form.password"
+        :rules="passwordRules"
+        label="Password"
+        type="Password"
+        required
+      ></v-text-field>
+
     <v-checkbox
       v-model="checkbox"
       :rules="[v => !!v || 'You must agree to continue!']"
@@ -43,6 +58,7 @@
     >
       Reset Form
     </v-btn>
+    
     <v-btn
       color="success"
       class="mr-4"
@@ -55,17 +71,31 @@
 </template>
 
 <script>
+import { db } from '../main'
+import firebase from "firebase"
+
   export default {
     data: () => ({
+      users: [],
       valid: true,
       form: {
         name: '',
         age: '',
-        location: ''
+        location: '',
+        email: '',
+        password: ''
       },
       nameRules: [
         v => !!v || 'Name is required',
         v => (v && v.length <= 10) || 'Name must be less than 10 characters',
+      ],
+      emailRules: [
+        v => !!v || 'E-mail is required',
+        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+      ],
+      passwordRules: [
+        v => !!v || 'Password is required',
+        v => (v && v.length >= 6) || 'Password must be less than 6 characters',
       ],
       ageRules: [
         v => !!v || 'Age is required',
@@ -76,7 +106,11 @@
       ],
       checkbox: false,
     }),
-
+    firestore () {
+      return {
+        users: db.collection('users')
+      }
+    },
     methods: {
       reset () {
         this.$refs.form.reset()
@@ -91,10 +125,28 @@
           total_points: 0,
           points_scored: 0
         }
-        this.$http.post('https://vue-quiz-app-823e4.firebaseio.com/quiz/users.json', payload)
-        .then( function(data) {
-          console.log(data);
+
+        db.collection('users')
+        .add(payload)
+        .then((data) => {
+          console.log(data)
+        });
+
+        console.log("registering user")
+        firebase
+        .auth()
+        .createUserWithEmailAndPassword(this.form.email, this.form.password)
+        .then(data => {
+          data.user
+            .updateProfile({
+              displayName: this.form.name
+            })
+            .then(() => {});
         })
+        .catch(err => {
+          console.log(err.message);
+        });
+        console.log("user registered")
       }
     },
   }

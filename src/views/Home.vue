@@ -1,6 +1,6 @@
 <template>
   <div class="home">
-    <Header/>
+    
     {{ this.results.correct }} / {{ this.results.total }}
     <br/>
     <v-btn small @click.prevent=resetQuestion>Reset</v-btn>
@@ -29,7 +29,6 @@
 <script>
 // @ is an alias to /src
 import Card from '@/components/Card.vue'
-import Header from '@/components/Header.vue'
 import { mapState } from 'vuex'
 import { mapMutations } from 'vuex'
 import { mapGetters } from 'vuex'
@@ -37,8 +36,7 @@ import { mapGetters } from 'vuex'
 export default {
   name: 'Home',
   components: {
-    Card,
-    Header
+    Card
   },
   data: function() {
     return {
