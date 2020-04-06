@@ -1,6 +1,8 @@
 <template>
   <div class="home">
-    
+            <div v-if="user.loggedIn" class="alert alert-success" role="alert">
+            Hello, {{ user.data.displayName }}
+          </div>
     {{ this.results.correct }} / {{ this.results.total }}
     <br/>
     <v-btn small @click.prevent=resetQuestion>Reset</v-btn>
@@ -52,9 +54,6 @@ export default {
       'changeIndex',
       'storeQuestions'
     ]),
-    ...mapGetters([
-      'getQuestionById'
-    ]),
     doSomething: function(event) {
       if( event ) {
         this.results.correct++;
@@ -100,7 +99,11 @@ export default {
     ...mapState([
       'index',
       'questions'
-    ])
+    ]),
+    ...mapGetters([
+      'getQuestionById',
+      'user'
+    ]),
   },
   beforeMount: function() {
     this.fetchQuestion();

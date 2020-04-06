@@ -7,12 +7,25 @@ export default new Vuex.Store({
   state: {
     index: 0,
     questions: [],
-    dummy: ""
+    user: {
+      loggedIn: false,
+      data: null
+    }
+
   },
   getters: {
+    user(state){
+      return state.user
+    },
     getQuestionById: state => index =>  { return state.questions[index] }
   },
   mutations: {
+    SET_LOGGED_IN(state, value) {
+      state.user.loggedIn = value;
+    },
+    SET_USER(state, data) {
+      state.user.data = data;
+    },
     changeIndex(state, val) {
       state.index += val;
     },
@@ -21,6 +34,17 @@ export default new Vuex.Store({
     }
   },
   actions: {
+    fetchUser({ commit }, user) {
+      commit("SET_LOGGED_IN", user !== null);
+      if (user) {
+        commit("SET_USER", {
+          displayName: user.displayName,
+          email: user.email
+        });
+      } else {
+        commit("SET_USER", null);
+      }
+    }
   },
   modules: {
   }
