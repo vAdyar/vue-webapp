@@ -118,9 +118,9 @@ import firebase from "firebase"
 
 <style scoped>
 #form {
-width: 40%;
-padding: 0px;
-margin: 10% auto;
+    width: 40%;
+    padding: 0px;
+    margin: 10% auto;
 }
 
 #add {
