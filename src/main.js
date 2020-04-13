@@ -7,6 +7,8 @@ import VueResoure from 'vue-resource'
 import * as firebase from 'firebase'
 import { firestorePlugin } from 'vuefire'
 
+//firebase: CI with travis -> https://travis-ci.org
+
 Vue.config.productionTip = false
 
 Vue.use(VueResoure);
