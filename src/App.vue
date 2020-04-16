@@ -2,11 +2,6 @@
   <v-app id="center">
     <v-content class="v-content">
       <Header/>
-      <router-link to="/home">HOME</router-link> | 
-      <router-link to="/userForm">USER FORM</router-link> | 
-      <router-link to="/login">LOGIN</router-link> | 
-      <router-link to="/results">RESULTS</router-link>
-      <br/><br/>
       <router-view/>
     </v-content>
   </v-app>

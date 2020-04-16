@@ -3,16 +3,16 @@
     class="mx-auto"
     max-width="444"
   >
-    <v-card-text v-if="this.$store.getters.getQuestionById(this.index)">
-      <p> {{ this.$store.getters.getQuestionById(this.index).category }} </p>
+    <v-card-text v-if="this.cue(this.index)">
+      <p> {{ this.cue(this.index).category }} </p>
       <p class="display-1 text--primary">
-        {{ this.$store.getters.getQuestionById(this.index).question }}
+        {{ this.cue(this.index).question }}
       </p>
       <div class="text--primary">
         <v-list rounded>
-          <v-list-item-group v-model="this.$store.getters.getQuestionById(this.index).options" color="primary">
+          <v-list-item-group v-model="this.cue(this.index).options" color="primary">
             <v-list-item
-              v-for="(item, i) in this.$store.getters.getQuestionById(this.index).options"
+              v-for="(item, i) in this.cue(this.index).options"
               :key="i" @click.prevent="answerClicked(item)"
             >
               <v-list-item-content>
@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     component: {
@@ -35,9 +35,7 @@ export default {
     },
     data: function() {
         return {
-            card: {
-                isCorrect: false
-            }
+          // cue: {}
         }
     },  
     props: {
@@ -45,20 +43,40 @@ export default {
     },
     methods: {
         ...mapGetters([
-          'getQuestionById'
+          'getQuestionById', 'getCorrect', 'getIndex'
+        ]),
+        ...mapActions([
+          'setCorrect', 'setIndex'
         ]),
         answerClicked(item) {
+          console.log(this.cue(this.index))
           console.log("item: "+item)
-          let answer = this.$store.getters.getQuestionById(this.index).correct_answer;
-            if(answer === item) {
-                this.card.isCorrect = true;       
+          let answer = this.getQuestionById()(this.index).correct_answer;
+
+          if(answer === item) {
+                this.setCorrect(this.getCorrect() + 1);
                 console.log("correct")
-            } else {
-                this.card.isCorrect = false;
-                console.log("incorrect")
             }     
-            this.$emit('next', this.card.isCorrect);
+            this.setIndex(this.getIndex() + 1);
+
         }
+    },
+    computed: {
+      ...mapGetters({
+        cue: 'getQuestionById'
+    })
+    
+    // getQuestionById: {
+    //   get() {
+    //     return this.cue()
+    //   },
+    //   set(cue) {
+    //     return cue
+    //   }
+    // }
+    },
+    async mounted() {
+      await this.getQuestionById()(this.index)
     }
 }
 </script>
